@@ -70,7 +70,7 @@ latent_3d_points/notebooks/compute_evaluation_metrics.ipynb
 ![2](results/2.png)
 ## 3. L-GAN网络重构结果
 ![3](results/3.png)
-## 评价指标
+## 4. 评价指标
 |MMD|COV|JSD|
 |-|-|-|
 |0.071|0.73|0.0397|
