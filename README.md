@@ -1,81 +1,76 @@
-# Learning Representations and Generative Models For 3D Point Clouds
-Created by <a href="https://ai.stanford.edu/~optas/" target="_blank">Panos Achlioptas</a>, <a href="http://olga-diamanti.net" target="_blank">Olga Diamanti</a>, <a href="https://mitliagkas.github.io" target="_blank">Ioannis Mitliagkas</a>, <a href="https://geometry.stanford.edu/member/guibas/" target="_blank">Leonidas J. Guibas</a>.
+# Learning Representations and Generative Models For 3D Point Clouds 2018ICML
+## 原文链接：https://github.com/optas/latent_3d_points
+具体内容见Python代码
 
-![representative](https://github.com/optas/latent_3d_points/blob/master/doc/images/teaser.jpg)
+# 环境
+- GPU：RTX 3060Ti（AutoDL云服务器）
+- Python = 3.8.10
+```
+pip install numpy==1.19.5
+pip install scipy
+pip install tensorflow
+pip install tflearn
+```
 
-
-## Introduction
-This work is based on our [arXiv tech report](https://arxiv.org/abs/1707.02392). We proposed a novel deep net architecture for auto-encoding point clouds. The learned representations were amenable to semantic part editting, shape analogies, linear classification and shape interpolations.
-<!-- You can also check our [project webpage](http://stanford.edu/~optas/) for a deeper introduction. -->
-
-
-## Citation
-If you find our work useful in your research, please consider citing:
-
-	@article{achlioptas2017latent_pc,
-	  title={Learning Representations and Generative Models For 3D Point Clouds},
-	  author={Achlioptas, Panos and Diamanti, Olga and Mitliagkas, Ioannis and Guibas, Leonidas J},
-	  journal={arXiv preprint arXiv:1707.02392},
-	  year={2017}
-	}
-
-
-## Dependencies
-Requirements:
-- Python 2.7+ with Numpy, Scipy and Matplotlib
-- [Tensorflow (version 1.0+)](https://www.tensorflow.org/get_started/os_setup)
-- [TFLearn](http://tflearn.org/installation)
-
-Our code has been tested with Python 2.7, TensorFlow 1.3.0, TFLearn 0.3.2, CUDA 8.0 and cuDNN 6.0 on Ubuntu 14.04.
-
-
-## Installation
-Download the source code from the git repository:
+# 下载代码
+## 1. 下载代码
 ```
 git clone https://github.com/optas/latent_3d_points
 ```
 
-To be able to train your own model you need first to _compile_ the EMD/Chamfer losses. In latent_3d_points/external/structural_losses we have included the cuda implementations of [Fan et. al](https://github.com/fanhqme/PointSetGeneration).
+## 2. 相关改动
 ```
-cd latent_3d_points/external
+cd latent_3d_points/external/structural_losses
 
-with your editor modify the first three lines of the makefile to point to 
-your nvcc, cudalib and tensorflow library.
+将其中的makefile文件前三行改成以下内容：
+nvcc = /usr/local/cuda-11.2/bin/nvcc
+cudalib =  /usr/local/cuda-11.2/lib64
+tensorflow = /home/anaconda3/envs/pcloud/lib/python3.6/site-packages/tensorflow/include
+```
+```
+因为原始代码都是使用python2.7编写，因此需要将其转为python3.x版本的代码
+2to3 -w xxx.py
+```
+```
+另外一定要注意jupyter中的文件路径，在src文件夹内的代码中加入以下代码，将代码文件的上一级目录设为项目路径
+project_root = os.path.abspath(os.path.join(os.getcwd(), '..'))
+sys.path.append(project_root)
 
-make
+另外一定要注意.与..的区别，若读入项目路径外面的文件会报错
 ```
 
-### Data Set
-We provide ~57K point-clouds, each sampled from a mesh model of 
-<a href="https://www.shapenet.org" target="_blank">ShapeNetCore</a> 
-with (area) uniform sampling. To download them (1.4GB):
+# 数据集
 ```
-cd latent_3d_points/
-./download_data.sh
+数据地址：https://www.dropbox.com/s/vmsdrae6x5xws1v/shape_net_core_uniform_samples_2048.zip?dl=0
+下载解压后将数据集放到latent_3d_points/data/shape_net_core_uniform_samples_2048路径中
 ```
-The point-clouds will be stored in latent_3d_points/data/shape_net_core_uniform_samples_2048
 
-Use the function snc_category_to_synth_id, defined in src/in_out/, to map a class name such as "chair" to its synthetic_id: "03001627". Point-clouds of models of the same class are stored under a commonly named folder.
+# 测试
+## 1. 训练AE
+```
+latent_3d_points/notebooks/train_single_class_ae.ipynb
+```
+## 2. 训练R-GAN
+```
+latent_3d_points/notebooks/train_raw_gan.ipynb   
+```
+## 3. 训练L-GAN
+```
+latent_3d_points/notebooks/train_latent_gan.ipynb
+```
+## 4. 训练指标
+```
+latent_3d_points/notebooks/compute_evaluation_metrics.ipynb
+```
 
-
-### Usage
-To train a point-cloud AE look at:
-
-    latent_3d_points/notebooks/train_single_class_ae.ipynb
-
-To train a latent-GAN based on a pre-trained AE look at:
-
-    latent_3d_points/notebooks/train_latent_gan.ipynb
-
-To train a raw-GAN:
-
-    latent_3d_points/notebooks/train_raw_gan.ipynb    
-
-To use the evaluation metrics (MMD, Coverage, JSD) between two point-cloud sets look at:
-
-    latent_3d_points/notebooks/compute_evaluation_metrics.ipynb
-
-
-
-## License
-This project is licensed under the terms of the MIT license (see LICENSE.md for details).
+# 结果
+## 1. AE网络重构结果
+![1](results/1.png)
+## 2. R-GAN网络重构结果
+![2](results/2.png)
+## 3. L-GAN网络重构结果
+![3](results/3.png)
+## 评价指标
+|MMD|COV|JSD|
+|-|-|-|
+|0.071|0.73|0.0397|
