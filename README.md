@@ -1,4 +1,4 @@
-# Learning Representations and Generative Models For 3D Point Clouds 2018ICML
+# Learning Representations and Generative Models For 3D Point Clouds(ICML 2018)
 ## 原文链接：https://github.com/optas/latent_3d_points
 具体内容见Python代码
 
